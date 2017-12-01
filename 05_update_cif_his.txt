@@ -1,0 +1,19 @@
+--UPDATE¥x©w
+UPDATE  PS_SA_CUST_CIF_HIS_200802 aa
+SET (aa.MON_ATERM_DEP_AUM, aa.total_asset_bal) = 
+(
+SELECT (aa.MON_ATERM_DEP_AUM + b.TOT ) MON_ATERM_DEP_AUM ,(aa.total_asset_bal + b.TOT) total_asset_bal   FROM 
+TEMP_TD_AVG_ME b
+WHERE
+b.YYYYMM = '200802' AND
+aa.PERSON_ID  = TRIM(b.PERSON_ID) AND
+aa.BRANCH_NBR = b.BRANCH_NBR ) 
+
+WHERE
+exists ( select  'x' from   TEMP_TD_AVG_ME x 
+where aa.person_id = TRIM(x.person_id) and aa.branch_nbr = x.branch_nbr AND x.YYYYMM = '200802' ) AND
+aa.YEARMONTH = '200802'
+commit;  
+
+
+
