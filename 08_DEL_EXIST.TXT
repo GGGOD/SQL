@@ -1,0 +1,5 @@
+﻿delete from  LIFE_RECEIPT_TXNS a where  exists  (select b.* from LIFE_RECEIPT_TXNS_dup3 b
+where
+a.event_id= b.event_id and a.RECEIPT_TP = b.RECEIPT_TP and a.RECEIPT_SQ = b.RECEIPT_SQ and
+a.POLICY_NO = b.POLICY_NO and a.POLICY_SEQ = b.POLICY_SEQ and a.ID_DUP = b.ID_DUP and
+a.snap_date = b.snap_date)
