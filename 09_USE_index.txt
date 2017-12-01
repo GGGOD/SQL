@@ -1,0 +1,4 @@
+SELECT /*+ index(FBRNY8A0_day IDX_FBRNY8A0D_SNAPDATE1)*/ *  FROM FBRNY8A0_day
+where
+--snap_Date = (select max(snap_date) from fbrny8a0_day)
+to_char(snap_date,'yyyymmdd') = '20100303'

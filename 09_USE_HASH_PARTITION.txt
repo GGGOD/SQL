@@ -1,0 +1,15 @@
+SELECT /*+ USE_HASH (a,b) */   
+a.appl_id, a.max_eff_date1, b.acct_nbr
+  FROM (SELECT   appl_id, MAX (eff_date1) AS max_eff_date1
+            FROM f_l_acct_me PARTITION(P_200908)
+           WHERE main_ridr = '1' AND snap_yyyymm = '200908'
+        GROUP BY appl_id) a
+       INNER JOIN
+       (SELECT appl_id, eff_date1,
+               (   SUBSTR ((TRIM (policy_no) || '0000000000'), 1, 15)
+                || SUBSTR (TRIM ('000' || TRIM (TO_CHAR (policy_seq))), -3, 3)
+                || TRIM (TO_CHAR (id_dup))
+               ) AS acct_nbr
+          FROM f_l_acct_me PARTITION(P_200908) 
+         WHERE main_ridr = '1' AND snap_yyyymm = '200908') b 
+       ON a.appl_id = b.appl_id AND a.max_eff_date1 = b.eff_date1

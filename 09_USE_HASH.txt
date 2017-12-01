@@ -1,0 +1,30 @@
+Select /*+ USE_HASH (T1,T2, T3) */
+ T1.CUST_ID,
+ NVL(T1.CUST_BRH,T1.BRH_COD) BRH_COD,
+  ((T1."BRH_COD" || T1."SUBJ") || T1."SERIAL") "CF21D",
+ T2.SLIP_NO "WSEQ",
+ T2.CUR  "CCY",
+ T2.DPR_MM||'M'||T2.DPR_DDD||'D' as "CFD9N" , -----Melissa modified by 2007/07/02
+-- T2.DPR_MM,
+-- T2.DPR_DDD,
+ to_char(T2."BK_VALUE",'YYYYMMDD') "CFD3",
+ to_char(T2."DUE_DTE",'YYYYMMDD') "CFD2",
+ case when T2.INT_TYP='1' then '固定' 
+      when T2.INT_TYP='2' then '機動' else ' ' end as "W30MN" ,-----Melissa modified by 2007/07/02
+ T2.INT_RATE  "CF30D",
+ T2.OPN_DPR_AMT  "BALANC",
+ T2.EXCG_RATE  "EXR",
+ T2.AUTO_TR_TYP,
+ T1.ACT_EXCP
+from 
+(SELECT * FROM ODS_BANK.FD001_M_VW a 
+WHERE   a.SUBJ || SUBSTR(a.SERIAL,1,1)  NOT IN  ('277' ,'278') ) T1,                                                          --  2008/01/10 tienhong  排除外幣組合式商品
+ODS_BANK.FD002_M_VW T2, FBFC017_DPA T3
+where
+T2.CLS_DTE is null
+and
+ T2.OPN_DPR_AMT > 0
+and
+ T1."BRH_COD"|| T1."SUBJ" || T1."SERIAL"  = T2."ACNO_SA"
+and
+ trim(T1.CUST_ID) = T3.FC1701
